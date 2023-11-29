@@ -10,7 +10,7 @@ def register_user(request):
     if request.method == 'POST':
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
-            instance = serializer.save()
-            send_message.delay(instance.email)
+            user = serializer.save()
+            send_message.delay(user.id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

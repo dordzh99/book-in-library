@@ -5,5 +5,5 @@ from .views import register_user
 app_name = 'users'
 
 urlpatterns = [
-    path('', register_user),
+    path('users/', register_user),
 ]

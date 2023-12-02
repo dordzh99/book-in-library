@@ -1,21 +1,22 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from .validators import validate_year
+
 User = get_user_model()
 
 class Book(models.Model):
     title = models.CharField(
-        verbose_name='Название',
+        verbose_name='Название книги',
         max_length=100
     )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='books',
-        verbose_name='Автор'
+    author = models.CharField(
+        verbose_name='Автор книги',
+        max_length=100
     )
     publication_year = models.PositiveSmallIntegerField(
-        verbose_name='Год издания'
+        verbose_name='Год издания',
+        validators=[validate_year]
     )
     isbn = models.CharField(
         verbose_name='ISBN',

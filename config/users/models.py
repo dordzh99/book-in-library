@@ -4,6 +4,8 @@ import datetime as dt
 
 
 class CustomUser(AbstractUser):
+    """Кастомная модель пользователя."""
+
     email = models.EmailField(
         verbose_name='Почта',
         unique=True
@@ -16,4 +18,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
-

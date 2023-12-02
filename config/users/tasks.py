@@ -7,11 +7,10 @@ from config.settings import EMAIL_HOST_USER
 User = get_user_model()
 
 @shared_task
-def send_message(user_id):
-    user = User.objects.get(pk=user_id)
+def send_message(user_email):
     send_mail(
         'Добро пожаловать!',
         'Вы успешно зарегистрированы на нашем сервере!',
         EMAIL_HOST_USER,
-        [user.email]
+        [user_email]
     )

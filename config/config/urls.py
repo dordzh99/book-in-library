@@ -1,11 +1,9 @@
 from django.contrib import admin
 from django.urls import include, path
 
-from users.views import register_user
-
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('books.urls')),
-    path('users/', include('users.urls')),
+    path('api/', include('books.urls')),
+    path('api/', include('djoser.urls')),
+    path('api/auth/', include('djoser.urls.authtoken')),
 ]

@@ -1,0 +1,398 @@
+openapi: 3.0.2
+info:
+  title: 'Books in library'
+  version: ''
+paths:
+  /api/books/:
+    get:
+      operationId: Список книг
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Номер страницы.
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: Количество объектов на странице.
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://127.0.0.1:8000/api/books/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://127.0.0.1:8000/api/books/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BooksList'
+                    description: 'Список объектов текущей страницы'
+          description: ''
+      tags:
+        - Книги
+    post:
+      security:
+        - Token: []
+      operationId: Создание книги
+      description: 'Доступно только авторизованному пользователю'
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BooksList'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksList'
+          description: 'Книга создана'
+        '400':
+          description: 'Ошибки валидации в стандартном формате DRF'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          $ref: '#/components/schemas/AuthenticationError'
+      tags:
+        - Книги
+  /api/books/{id}/:
+    get:
+      operationId: Получение информации о книге
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный id книги'
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksList'
+          description: ''
+      tags:
+        - Книги
+    patch:
+      security:
+        - Token: []
+      operationId: Обновление книги
+      description: 'Доступно только авторизованному пользователю'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: "Уникальный идентификатор книги."
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BooksList'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BooksList'
+          description: 'Книга обновлена'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Книги
+    delete:
+      security:
+        - Token: []
+      operationId: Удаление книги
+      description: 'Доступно только авторизованному пользователю'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: 'Уникальный идентификатор книги'
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'Книга успешно удалена'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      tags:
+        - Книги
+  /api/users/:
+    get:
+      operationId: Список пользователей
+      parameters:
+        - name: page
+          required: false
+          in: query
+          description: Номер страницы.
+          schema:
+            type: integer
+        - name: limit
+          required: false
+          in: query
+          description: Количество объектов на странице.
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 123
+                    description: 'Общее количество объектов в базе'
+                  next:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://127.0.0.1:8000/api/users/?page=4
+                    description: 'Ссылка на следующую страницу'
+                  previous:
+                    type: string
+                    nullable: true
+                    format: uri
+                    example: http://127.0.0.1:8000/api/users/?page=2
+                    description: 'Ссылка на предыдущую страницу'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CustomUserResponseOnCreate'
+                    description: 'Список объектов текущей страницы'
+      tags:
+        - Пользователи
+    post:
+      operationId: Регистрация пользователя
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomUserCreate'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUserResponseOnCreate'
+          description: 'Пользователь успешно создан'
+        '400':
+          $ref: '#/components/responses/ValidationError'  
+      tags:
+        - Пользователи
+  /api/users/me/:
+    get:
+      security:
+        - Token: []
+      operationId: Текущий пользователь
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomUserResponseOnCreate'
+        '401':
+          $ref: '#/components/responses/AuthenticationError'
+      tags:
+        - Пользователи
+  /api/auth/token/login/:
+    post:
+      operationId: Получить токен авторизации
+      description: Используется для авторизации по емейлу и паролю, чтобы далее использовать токен при запросах.
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+      tags:
+        - Пользователи
+
+components:
+  schemas:
+    BooksList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+          description: 'Уникальный id'
+        title:
+          type: string
+          description: 'Название книги'
+          example: 'Капитанская дочка'
+          maxLength: 100
+        publication_year:
+          type: integer
+          description: 'Год издания'
+          example: 1752
+        isbn:
+          type: string
+          description: 'ISBN'
+          example: '9781910880463'
+          maxLength: 13
+        author:
+          type: string
+          description: 'Автор'
+          example: 'Пушкин'
+          maxLength: 100
+      required:
+        - title
+        - publication_year
+        - author
+        - isbn
+    CustomUserCreate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: 'Адрес электронной почты'
+          example: 'ivanovivan@mail.ru'
+          maxLength: 100
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: 'Уникальный юзернейм'
+          pattern: ^[\w.@+-]+\z
+          example: 'ivan.ivanov'
+          maxLength: 100
+        password:
+          type: string
+          maxLength: 150
+          description: 'Пароль'
+          example: 'Qwerty123'
+      required:
+        - username
+        - password
+        - email
+    CustomUserResponseOnCreate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: 'Адрес электронной почты'
+          example: 'ivanovivan@mail.ru'
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: 'Уникальный юзернейм'
+          pattern: ^[\w.@+-]+\z
+          example: 'ivan.ivanov'
+        registration_date:
+          type: string
+          format: date
+          description: 'Дата регистрации пользователя'
+          example: '2023-11-30'
+      required:
+        - username
+        - registration_date
+        - email
+
+    ValidationError:
+      description: Стандартные ошибки валидации DRF
+      type: object
+      properties:
+        field_name:
+          description: 'Название поля, в котором произошли ошибки. Таких полей может быть несколько'
+          example: [ 'Обязательное поле.' ]
+          type: array
+          items:
+            type: string
+    AuthenticationError:
+      description: Пользователь не авторизован
+      type: object
+      properties:
+        detail:
+          description: 'Описание ошибки'
+          example: "Учетные данные не были предоставлены."
+          type: string
+    NotFound:
+      description: Объект не найден
+      type: object
+      properties:
+        detail:
+          description: 'Описание ошибки'
+          example: "Страница не найдена."
+          type: string
+  responses:
+    ValidationError:
+      description: 'Ошибки валидации в стандартном формате DRF'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+    AuthenticationError:
+      description: Пользователь не авторизован
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AuthenticationError'
+    NotFound:
+      description: Объект не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFound'
+
+  securitySchemes:
+    Token:
+      description: 'Авторизация по токену. <br>
+      Все запросы от имени пользователя должны выполняться с заголовком "Authorization: Token TOKENVALUE"'
+      type: http
+      scheme: token
